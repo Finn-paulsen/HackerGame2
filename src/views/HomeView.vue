@@ -2,12 +2,7 @@
   <TheLogin v-if="!userData.user" />
 
   <div v-else class="tool-icons" id="tool-icons">
-    <div
-      id="datenbankIcon"
-      class="icon"
-      data-name="Datenbank"
-      @click="toggleDatenbankFenster"
-    >
+    <div id="datenbankIcon" class="icon" data-name="Datenbank" @click="toggleDatenbankFenster">
       <img src="../Bilder/database.png" alt="Datenbank Icon" />
       <p>Database</p>
     </div>
@@ -17,58 +12,48 @@
       <p>Files</p>
     </div>
 
-    <div
-      id="mainserverIcon"
-      class="icon"
-      data-name="Main Server"
-      onclick="zeigeMainServer()"
-    >
+    <div id="mainserverIcon" class="icon" data-name="Main Server" onclick="zeigeMainServer()">
       <img src="../Bilder/main-server.png" alt="Main-Server Icon" />
       <p>Main-Server</p>
     </div>
 
-    <div
-      id="newterminal"
-      class="icon"
-      data-name="New Terminal"
-      onclick="zeigenewterminal()"
+
     >
+
+    <div id="remoteconnectionIcon" class="icon" data-name="Remote Connection" onclick="zeigeremoteconnection()">
+      <img src="../Bilder/remote-connection.png" alt="Remote-Connection Icon" />
+      <p>Remote Connection</p>
+    </div>
+
+    <div id="newterminal" class="icon" data-name="New Terminal" @click="toggleDarkTerminal">
       <img src="../Bilder/new-terminal.png" alt="New-Terminal Icon" />
       <p>Dark Terminal</p>
     </div>
 
-    <div
-      id="remoteconnectionIcon"
-      class="icon"
-      data-name="Remote Connection"
-      onclick="zeigeremoteconnection()"
-    >
+    <div id="remoteconnectionIcon" class="icon" data-name="Remote Connection" @click="zeigeremoteconnection">
       <img src="../Bilder/remote-connection.png" alt="Remote-Connection Icon" />
       <p>Remote Connection</p>
     </div>
-    <Searchdata/>
+
+    <Searchdata :datensaetze="datensaetze" :toggleDatenbankFenster="toggleDatenbankFenster" />
+    <DarkTerminal :showCmdWindow="showCmdWindow" />
   </div>
-  
 </template>
- 
+
 <script setup>
 import { ref } from "vue";
 import { userStore } from "../store/user";
 
 import TheLogin from "../components/TheLogin.vue";
-import Searchdata from "../components/Searchdata.vue"
+import Searchdata from "../components/Searchdata.vue";
+import datensaetzeData from '../assets/MOCK_DATA.json';
+import DarkTerminal from '../components/DarkTerminal.vue';
 
+const datensaetze = ref(datensaetzeData);
 const showFiles = ref(false);
 const userData = userStore();
 const ergebnisse = ref([]);
-const datensaetze = ref([
-  {
-    name: "Max Mustermann",
-    adresse: "Musterstraße 123, 12345 Musterstadt",
-    iban: "DE89370400440532013000",
-    email: "max.mustermann@example.com",
-  },
-]);
+const showCmdWindow = ref(false); // Zustand für das Dark Terminal
 
 const zeigeFiles = () => {
   showFiles.value = !showFiles.value;
@@ -80,25 +65,19 @@ const toggleDatenbankFenster = () => {
   ergebnisse.value = [];
 };
 
+const toggleDarkTerminal = () => {
+  showCmdWindow.value = !showCmdWindow.value; // Umschalten des Zustands
+};
+
 const sucheNachName = () => {
   const filterInput = document.getElementById("filter-input");
   const gesuchterName = filterInput.value.toLowerCase();
   ergebnisse.value = datensaetze.value.filter((datensatz) =>
     datensatz.name.toLowerCase().includes(gesuchterName)
   );
-
-  ergebnisContainer.innerHTML = "";
-  gefunden.forEach((datensatz) => {
-    const datensatzElement = document.createElement("p");
-    datensatzElement.textContent = `${datensatz.name}, ${datensatz.adresse}, ${datensatz.iban}, ${datensatz.email}`;
-    datensatzElement.style.color = "black";
-    ergebnisContainer.appendChild(datensatzElement);
-  });
-
-  toggleDatenbankFenster();
 };
 </script>
- 
+
 <style>
 body {
   margin: 0;
@@ -131,6 +110,7 @@ body {
   width: 100%;
   align-items: start;
 }
+
 .terminal-container {
   display: flex;
   gap: 1rem;
@@ -152,6 +132,7 @@ body {
   z-index: 1;
   box-sizing: border-box;
 }
+
 .terminal-header {
   font-size: 20px;
   font-weight: bold;
@@ -264,6 +245,7 @@ button:hover {
   0% {
     background-position: 0% 50%;
   }
+
   100% {
     background-position: 100% 50%;
   }
@@ -285,6 +267,7 @@ button:hover {
   0% {
     box-shadow: 0 0 5px rgba(0, 255, 0, 0.8);
   }
+
   100% {
     box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
   }
@@ -298,9 +281,11 @@ button:hover {
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.05);
   }
+
   100% {
     transform: scale(1);
   }

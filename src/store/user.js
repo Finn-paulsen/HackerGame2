@@ -1,33 +1,33 @@
 import { defineStore } from 'pinia'
-import { ref } from "vue" 
+import { ref } from "vue"
 import MOCK_DATA from "../assets/MOCK_DATA.json"
 
-export const userStore = defineStore("userStore", ()=>{
-    const ID =5520 
-    const user=ref(false)
+export const userStore = defineStore("userStore", () => {
+    const ID = 5520
+    const user = ref(false)
     const showErrorMessage = ref(false);
-    const storeHelper = ref({Searchresult:false});
+    const storeHelper = ref({ Searchresult: false });
     const mockData = JSON.stringify(MOCK_DATA)
 
-    function checkAccess(parameter){
-        if (parameter==ID){ 
-            user.value=true
-        }else {
-            showErrorMessage.value=true
+    function checkAccess(parameter) {
+        if (parameter == ID) {
+            user.value = true
+        } else {
+            showErrorMessage.value = true
         }
     }
 
-    function Searchdata(parameter){
-        if (parameter==storeHelper){
+    function Searchdata(parameter) {
+        if (parameter == storeHelper) {
             storeHelper.value.true
-        }else {
-            
+        } else {
+
         }
     }
     console.log(MOCK_DATA)
 
-    return{
-        ID,user,checkAccess,showErrorMessage,
+    return {
+        ID, user, checkAccess, showErrorMessage,
         Searchdata
     }
 }) 
