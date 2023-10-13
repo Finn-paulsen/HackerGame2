@@ -8,7 +8,7 @@
 
   <div v-if="isOpened" class="terminal-container">
     <h2>Command Prompt</h2>
-    <h3>Welcome to the Hacker Terminal</h3>
+    <h3>Welcome, please enter the access data so that I know who you are</h3>
     <form @submit.prevent="userData.checkAccess(idText)">
       <label for="username">Username:</label>
       <input type="text" />
