@@ -37,6 +37,7 @@
 
     <Searchdata :datensaetze="datensaetze" :toggleDatenbankFenster="toggleDatenbankFenster" />
     <DarkTerminal :showCmdWindow="showCmdWindow" />
+    <TerminalModal ref="terminalModal" />
   </div>
 </template>
 
@@ -70,11 +71,21 @@ const toggleDarkTerminal = () => {
 };
 
 const sucheNachName = () => {
-  const filterInput = document.getElementById("filter-input");
-  const gesuchterName = filterInput.value.toLowerCase();
-  ergebnisse.value = datensaetze.value.filter((datensatz) =>
-    datensatz.name.toLowerCase().includes(gesuchterName)
-  );
+  // Überprüfe, ob das Suchfeld nicht leer ist, bevor die Suche durchgeführt wird
+  if (filterInput.trim() !== '') {
+    ergebnisse.value = datensaetze.value.filter((datensatz) =>
+      datensatz.first_name.toLowerCase().includes(filterInput.toLowerCase())
+    );
+  } else {
+    // Wenn das Suchfeld leer ist, zeige eine Fehlermeldung an oder tue nichts
+    console.error("Bitte geben Sie einen Namen ein.");
+    // Hier könntest du auch eine Toast-Nachricht oder eine andere Benachrichtigung verwenden
+  }
+};
+
+const openTerminal = () => {
+  const terminalModal = this.$refs.terminalModal;
+  terminalModal.open();
 };
 </script>
 

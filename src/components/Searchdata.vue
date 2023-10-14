@@ -1,6 +1,7 @@
 <template>
   <div id="datenbankFenster" class="versteckt" @click.stop>
-    <input type="text" v-model="filterInput" placeholder="Namen eingeben" />
+    <input v-model="filterInput" @keyup.enter="sucheNachName" placeholder="Namen eingeben" />
+
     <button @click="sucheNachName">Suchen</button>
     <div class="ergebnis-container">
       <table class="custom-table">
