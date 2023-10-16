@@ -1,76 +1,88 @@
 <template>
-    <div v-if="showCmdWindow" id="dark-terminal">
-        <div id="output">
-            <div v-for="(message, index) in messages" :key="index" class="terminal-message">{{ message }}</div>
-        </div>
-        <input v-model="command" @keydown.enter="executeCommand" placeholder="Enter command..." />
+    <div>
+        <div class="dark-terminal">
+        <div v-for="(message, index) in messages" :key="index" class="terminal-message">{{ message }}</div>
+      </div>
+      <input v-model="command" @keydown.enter="executeCommand" placeholder="Please enter a command..." />
+      <DarkTerminal v-if="showDarkTerminal" />
     </div>
-</template>
+  </template>
   
-<script>
-export default {
-    data() {
-        return {
-            command: '',
-            messages: [],
-            loading: false,
-        };
-    },
-    methods: {
-        executeCommand() {
-            if (!this.command.trim()) return;
+  <script>
+  import { ref } from 'vue';
 
-            this.loading = true;
-            this.messages.push('Executing command...');
-
-            // Simulate command execution
-            setTimeout(() => {
-                this.messages.pop(); // Remove 'Executing command...' message
-                this.loading = false;
-
-                // Simulate different commands
-                if (this.command.toLowerCase() === 'getdata') {
-                    this.messages.push('Data retrieved successfully!');
-                } else {
-                    this.messages.push(`Error: Command not recognized - ${this.command}`);
-                }
-
-                this.command = ''; // Clear input
-            }, 1500);
-        },
-    },
-    props: {
-        showCmdWindow: Boolean,
-    },
-};
-</script>
+  export default {
+   
+    setup() {
+      const command = ref('');
+      const messages = ref([]);
+      const loading = ref(false);
+      const showDarkTerminal = ref(false);
   
-<style scoped>
-#dark-terminal {
+      const executeCommand = () => {
+        if (!command.value.trim()) return;
+  
+        loading.value = true;
+        messages.value.push("Executing command...");
+  
+        setTimeout(() => {
+          messages.value.pop();
+          loading.value = false;
+  
+          if (command.value.toLowerCase() === "getdata") {
+            messages.value.push("Data retrieved successfully!");
+          } else {
+            messages.value.push(`Error: Command not recognized - ${command.value}`);
+          }
+  
+          command.value = "";
+        }, 1500);
+      };
+  
+      return {
+        command,
+        messages,
+        loading,
+        showDarkTerminal,
+        executeCommand,
+      };
+    },
+    watch: {
+      showDarkTerminal(newValue) {
+        if (!newValue) {
+          this.messages = [];
+        }
+      },
+    },
+  };
+  </script>
+  
+  <style scoped>
+  .dark-terminal {
     background-color: #000;
     padding: 20px;
     border-radius: 10px;
     width: 400px;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
     color: #fff;
-}
-
-#output {
+  }
+  
+  #output {
     height: 200px;
     overflow-y: auto;
     border: 1px solid #333;
     padding: 10px;
     margin-bottom: 10px;
-}
-
-.terminal-message {
+  }
+  
+  .terminal-message {
     margin-bottom: 5px;
-}
-
-input {
+  }
+  
+  input {
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
-}
-</style>
+  }
+  </style>
   

@@ -17,9 +17,6 @@
       <p>Main-Server</p>
     </div>
 
-
-    >
-
     <div id="remoteconnectionIcon" class="icon" data-name="Remote Connection" onclick="zeigeremoteconnection()">
       <img src="../Bilder/remote-connection.png" alt="Remote-Connection Icon" />
       <p>Remote Connection</p>
@@ -36,7 +33,7 @@
     </div>
 
     <Searchdata :datensaetze="datensaetze" :toggleDatenbankFenster="toggleDatenbankFenster" />
-    <DarkTerminal :showCmdWindow="showCmdWindow" />
+    <DarkTerminal v-if="showDarkTerminal" />
     <TerminalModal ref="terminalModal" />
   </div>
 </template>
@@ -54,7 +51,7 @@ const datensaetze = ref(datensaetzeData);
 const showFiles = ref(false);
 const userData = userStore();
 const ergebnisse = ref([]);
-const showCmdWindow = ref(false); // Zustand für das Dark Terminal
+const showCmdWindow = ref(false); 
 
 const zeigeFiles = () => {
   showFiles.value = !showFiles.value;
@@ -66,20 +63,16 @@ const toggleDatenbankFenster = () => {
   ergebnisse.value = [];
 };
 
-const toggleDarkTerminal = () => {
-  showCmdWindow.value = !showCmdWindow.value; // Umschalten des Zustands
-};
-
 const sucheNachName = () => {
-  // Überprüfe, ob das Suchfeld nicht leer ist, bevor die Suche durchgeführt wird
+  
   if (filterInput.trim() !== '') {
     ergebnisse.value = datensaetze.value.filter((datensatz) =>
       datensatz.first_name.toLowerCase().includes(filterInput.toLowerCase())
     );
   } else {
-    // Wenn das Suchfeld leer ist, zeige eine Fehlermeldung an oder tue nichts
+    
     console.error("Bitte geben Sie einen Namen ein.");
-    // Hier könntest du auch eine Toast-Nachricht oder eine andere Benachrichtigung verwenden
+    
   }
 };
 

@@ -52,9 +52,28 @@
           <hr>
           <tr v-for="(datensatz, index) in ergebnisse" :key="index">
             <td class="datentyp">Bitcoin Adresse:</td>
-            <td>{{ datensatz.bitcoin_adress }}</td>
+            <td>{{ datensatz.bitcoin_address }}</td>
           </tr>
           <hr>
+          <tr v-for="(datensatz, index) in ergebnisse" :key="index">
+            <td class="datentyp">Street Adress:</td>
+            <td>{{ datensatz.street_address }}</td>
+          </tr>
+          <hr>
+          <tr v-for="(datensatz, index) in ergebnisse" :key="index">
+            <td class="datentyp">Street Name:</td>
+            <td>{{ datensatz.street_name }}</td>
+          </tr>
+          <hr>
+          <tr v-for="(datensatz, index) in ergebnisse" :key="index">
+            <td class="datentyp">Street Number:</td>
+            <td>{{ datensatz.street_number }}</td>
+          </tr>
+          <hr>
+          <tr v-for="(datensatz, index) in ergebnisse" :key="index">
+            <td class="datentyp">Postal Code:</td>
+            <td>{{ datensatz.postal_code }}</td>
+          </tr>
           <tr v-if="ergebnisse.length === 0">
             <td colspan="2">Keine Ergebnisse gefunden.</td>
           </tr>
