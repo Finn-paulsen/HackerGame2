@@ -8,6 +8,11 @@ export const userStore = defineStore("userStore", () => {
     const showErrorMessage = ref(false);
     const storeHelper = ref({ Searchresult: false });
     const mockData = JSON.stringify(MOCK_DATA)
+    const isDarkTerminalModalActive = ref(false)
+    
+    function toggleDarkTerminal(){
+        isDarkTerminalModalActive.value =!isDarkTerminalModalActive.value
+    }
 
     function checkAccess(parameter) {
         if (parameter == ID) {
@@ -28,6 +33,6 @@ export const userStore = defineStore("userStore", () => {
 
     return {
         ID, user, checkAccess, showErrorMessage,
-        Searchdata
+        Searchdata,toggleDarkTerminal,isDarkTerminalModalActive
     }
 }) 

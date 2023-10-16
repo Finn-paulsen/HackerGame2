@@ -17,12 +17,7 @@
       <p>Main-Server</p>
     </div>
 
-    <div id="remoteconnectionIcon" class="icon" data-name="Remote Connection" onclick="zeigeremoteconnection()">
-      <img src="../Bilder/remote-connection.png" alt="Remote-Connection Icon" />
-      <p>Remote Connection</p>
-    </div>
-
-    <div id="newterminal" class="icon" data-name="New Terminal" @click="toggleDarkTerminal">
+    <div id="newterminal" class="icon" data-name="New Terminal" @click="userData.toggleDarkTerminal()">
       <img src="../Bilder/new-terminal.png" alt="New-Terminal Icon" />
       <p>Dark Terminal</p>
     </div>
@@ -33,8 +28,7 @@
     </div>
 
     <Searchdata :datensaetze="datensaetze" :toggleDatenbankFenster="toggleDatenbankFenster" />
-    <DarkTerminal v-if="showDarkTerminal" />
-    <TerminalModal ref="terminalModal" />
+    <DarkTerminal v-if="userData.isDarkTerminalModalActive" />
   </div>
 </template>
 
@@ -75,6 +69,7 @@ const sucheNachName = () => {
     
   }
 };
+
 
 const openTerminal = () => {
   const terminalModal = this.$refs.terminalModal;

@@ -1,60 +1,45 @@
 <template>
     <div>
-        <div class="dark-terminal">
+        <div class="dark-terminal" id="output">
         <div v-for="(message, index) in messages" :key="index" class="terminal-message">{{ message }}</div>
       </div>
-      <input v-model="command" @keydown.enter="executeCommand" placeholder="Please enter a command..." />
-      <DarkTerminal v-if="showDarkTerminal" />
+      <form @submit.prevent="executeCommand">
+        <input v-model="command" placeholder="Please enter a command..." />
+      </form>
     </div>
   </template>
   
-  <script>
-  import { ref } from 'vue';
+  <script setup>
+import { ref } from 'vue';
+import { userStore } from "../store/user";
 
-  export default {
-   
-    setup() {
-      const command = ref('');
-      const messages = ref([]);
-      const loading = ref(false);
-      const showDarkTerminal = ref(false);
+const command = ref('');
+const messages = ref([]);
+const loading = ref(false);
+const showDarkTerminal = ref(false);
+const userData = userStore();
+
+
+const executeCommand = () => {
+    console.log("richtig")
+      if (!command.value.trim()) return;
+
+
+  loading.value = true;
+  messages.value.push("Executing command...");
   
-      const executeCommand = () => {
-        if (!command.value.trim()) return;
   
-        loading.value = true;
-        messages.value.push("Executing command...");
-  
-        setTimeout(() => {
-          messages.value.pop();
-          loading.value = false;
-  
-          if (command.value.toLowerCase() === "getdata") {
-            messages.value.push("Data retrieved successfully!");
-          } else {
-            messages.value.push(`Error: Command not recognized - ${command.value}`);
-          }
-  
-          command.value = "";
-        }, 1500);
-      };
-  
-      return {
-        command,
-        messages,
-        loading,
-        showDarkTerminal,
-        executeCommand,
-      };
-    },
-    watch: {
-      showDarkTerminal(newValue) {
-        if (!newValue) {
-          this.messages = [];
-        }
-      },
-    },
-  };
+
+    if (command.value.toLowerCase() === "getdata") {
+      messages.value.push("Data retrieved successfully!");
+    } else {
+      messages.value.push(`Error: Command not recognized - ${command.value}`);
+    }
+};      
+
+const clearMessages = () => {
+  messages.value = [];
+};
   </script>
   
   <style scoped>
@@ -77,6 +62,7 @@
   
   .terminal-message {
     margin-bottom: 5px;
+    color: orange;
   }
   
   input {
