@@ -3,171 +3,199 @@
     <div class="dark-terminal" id="output" v-show="showDarkTerminal">
       <div v-for="(message, index) in messages" :key="index" class="terminal-message">{{ message }}</div>
       <form @submit.prevent="executeCommand">
-  <input v-model="command" placeholder="Please enter a command..." />
-</form>
+        <input v-model="command" placeholder="Please enter a command..." @keydown.enter="executeCommand" />
+      </form>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
+import passwordList from "../assets/PASSWORD_LIST.json";
 
-const command = ref('');
 const messages = ref([]);
 const loading = ref(false);
 const showDarkTerminal = ref(true);
-const confirmationPending = ref(false); // Neues Ref für die Bestätigung
+const confirmationPending = ref(false);
+const passwordKey = ref('dasIstEinTestPassword'); 
 
-// Beispiel-Passwortliste
-const passwordList = [
-  'pass123',
-  'securePassword',
-  'letMeIn123',
-  // ... füge weitere Passwörter hinzu
-];
+const commandHistory = ref([]);
+let commandHistoryIndex = ref(-1);
 
-const password = ref('dasIstEinTestPassword'); // Jetzt als Ref definieren
+
 
 const toggleDarkTerminal = () => {
   showDarkTerminal.value = !showDarkTerminal.value;
 };
 
-// Funktion für das Knacken des Passworts
 const crackPassword = (passwordList) => {
-  // ... (füge hier deine Logik für das Knacken des Passworts ein)
+  const targetPassword = passwordKey.value; 
+
+  
+  for (const passwordItem of passwordList) {
+    const currentPassword = passwordItem.password;
+
+   
+    if (currentPassword === targetPassword) {
+      messages.value.push(`Password cracked: ${currentPassword}`);
+      return true; 
+    }
+  }
+
+  return false; 
 };
 
-// Funktion für den Start des Passwort-Crackers
 const startPasswordCracker = () => {
   let timeToCrack = 0;
   crackPassword(passwordList);
 };
 
-// Funktion für die Animation des Crackings
 const animateCracking = () => {
   attemptCrack(passwordList, 0);
 };
 
-// Funktion für den Crack-Versuch
 const attemptCrack = (passwords, currentIndex) => {
   if (currentIndex < passwords.length) {
     const currentPassword = passwords[currentIndex];
     messages.value.push(`Attempting to crack password: ${currentPassword}`);
 
-    // Hier kommt der Code für die Passwortprüfung hin
-
-    // Simuliere den nächsten Versuch nach 2 Sekunden
     setTimeout(() => {
       attemptCrack(passwords, currentIndex + 1);
     }, 2000);
   } else {
-    // Alle Passwörter versucht
     loading.value = false;
     messages.value.push('Password crack failed.');
   }
 };
 
-// Funktion für die Bestätigungsabfrage im Terminal
 const askConfirmation = () => {
   messages.value.push("Are you sure you want to start the password cracker? (y/n)");
-  confirmationPending.value = true; // Setze die Bestätigung ausstehend
+  confirmationPending.value = true;
 };
 
-// Funktion für die Ausführung des Befehls
-const executeCommand = () => {
-  if (!command.value.trim()) return;
-
-  loading.value = true;
-  messages.value.push("Executing command...");
-  executeCommandLogic();
+const clearConsole = () => {
+  messages.value = [];
 };
 
-// Funktion für die Logik der Befehlsausführung
+const addToCommandHistory = (command) => {
+  commandHistory.value.unshift(command);
+  commandHistoryIndex.value = -1;
+};
+
 const executeCommandLogic = () => {
   if (confirmationPending.value) {
-    // Nur wenn die Bestätigung ausstehend ist
     startPasswordCracker();
     animateCracking();
-    confirmationPending.value = false; // Setze die Bestätigung aufgelöst
+    confirmationPending.value = false;
   } else {
-    messages.value.push('Command not allowed without confirmation.');
+    if (command.value.toLowerCase() === "cls") {
+      clearConsole();
+    } else if (command.value.toLowerCase() === "history") {
+      messages.value.push("Command History:");
+      commandHistory.value.forEach((cmd, index) => {
+        messages.value.push(`${index + 1}. ${cmd}`);
+      });
+    } else if (command.value.toLowerCase() === "clearhistory") {
+      commandHistory.value = [];
+      messages.value.push("Command History cleared.");
+    } else if (command.value.toLowerCase() === "crackpassword") {
+      askConfirmation();
+    } else {
+      messages.value.push(`Error: Command not recognized - ${command.value}`);
+    }
   }
 
   setTimeout(() => {
     if (command.value.toLowerCase() === "getdata") {
       messages.value.push("Data retrieved successfully!");
-    } else if (command.value.toLowerCase() === "crackpassword") {
-      // Stelle eine Abfrage im Terminal
-      askConfirmation();
-    } else {
-      messages.value.push(`Error: Command not recognized - ${command.value}`);
     }
 
     command.value = "";
   }, 1500);
 };
 
-// Funktion für die Zeitberechnung zum Knacken des Passworts
-const calculateTimeToCrack = () => {
-  let timeToCrack = 0;
+const navigateCommandHistory = (direction) => {
+  const newIndex = commandHistoryIndex.value + direction;
+  if (newIndex >= 0 && newIndex < commandHistory.value.length) {
+    commandHistoryIndex.value = newIndex;
+    command.value = commandHistory.value[newIndex];
+  }
+};
 
+const executeCommand = () => {
+  if (!command.value.trim()) return;
+
+  addToCommandHistory(command.value);
+
+  loading.value = true;
+  messages.value.push("Executing command...");
+  executeCommandLogic();
+};
+
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowUp') {
+    navigateCommandHistory(1);
+  } else if (event.key === 'ArrowDown') {
+    navigateCommandHistory(-1);
+  }
+});
+
+const calculateTimeToCrack = () => {
   const complexityFactors = {
-    length: password.value.length,
-    uppercase: /[A-Z]/.test(password.value),
-    lowercase: /[a-z]/.test(password.value),
-    digits: /\d/.test(password.value),
-    specialChars: /[!@#$%^&*(),.?":{}|<>]/.test(password.value),
+    length: passwordKey.value.length,
+    uppercase: /[A-Z]/.test(passwordKey.value),
+    lowercase: /[a-z]/.test(passwordKey.value),
+    digits: /\d/.test(passwordKey.value),
+    specialChars: /[!@#$%^&*(),.?":{}|<>]/.test(passwordKey.value),
   };
 
+  let timeToCrack = 0;
+
+  
   if (complexityFactors.length < 8) {
-    timeToCrack += 2;
+    timeToCrack += 2; 
   } else {
-    timeToCrack += 5;
+    timeToCrack += 5; 
   }
 
-  if (complexityFactors.uppercase) timeToCrack += 3;
-  if (complexityFactors.lowercase) timeToCrack += 3;
-  if (complexityFactors.digits) timeToCrack += 4;
-  if (complexityFactors.specialChars) timeToCrack += 5;
+ 
+  timeToCrack += complexityFactors.uppercase ? 3 : 0;
+  timeToCrack += complexityFactors.lowercase ? 3 : 0;
+  timeToCrack += complexityFactors.digits ? 4 : 0;
+  timeToCrack += complexityFactors.specialChars ? 5 : 0;
 
   return timeToCrack;
 };
 
-// Setze die Zeit zum Knacken
 const timeToCrack = calculateTimeToCrack();
 </script>
 
+<style scoped>
+.dark-terminal {
+  background-color: #000;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
 
+#output {
+  height: 200px;
+  overflow-y: auto;
+  border: 1px solid #333;
+  padding: 10px;
+  margin-bottom: 10px;
+}
 
+.terminal-message {
+  margin-bottom: 5px;
+  color: orange;
+}
 
-
-  <style scoped>
-  .dark-terminal {
-    background-color: #000;
-    padding: 20px;
-    border-radius: 10px;
-    width: 400px;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-    color: #fff;
-  }
-  
-  #output {
-    height: 200px;
-    overflow-y: auto;
-    border: 1px solid #333;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .terminal-message {
-    margin-bottom: 5px;
-    color: orange;
-  }
-  
-  input {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-  }
-  </style>
-  
+input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+</style>
