@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="dark-terminal" id="output" v-show="showDarkTerminal">
+    <div class="custom-terminal" id="output" v-show="showCustomTerminal">
       <div v-for="(message, index) in messages" :key="index" class="terminal-message">{{ message }}</div>
-      <form @submit.prevent="executeCommand">
-        <input v-model="command" placeholder="Please enter a command..." @keydown.enter="executeCommand" />
+      <form @submit.prevent="executeCommandForm">
+        <input v-model="command" ref="commandInput" placeholder="Please enter a command..." @keydown.enter="executeCommandInput"/>
       </form>
     </div>
   </div>
@@ -11,31 +11,28 @@
 
 <script setup>
 import { ref } from 'vue';
-import passwordList from "../assets/PASSWORD_LIST.json";
 
+import passwordList from "../assets/PASSWORD_LIST.json";
 const messages = ref([]);
 const loading = ref(false);
-const showDarkTerminal = ref(true);
 const confirmationPending = ref(false);
 const passwordKey = ref('dasIstEinTestPassword'); 
+const command = ref('');
+const showCustomTerminal = ref(true);
+
+const toggleCustomTerminal = () => {
+  showCustomTerminal.value = !showCustomTerminal.value;
+};
 
 const commandHistory = ref([]);
 let commandHistoryIndex = ref(-1);
 
-
-
-const toggleDarkTerminal = () => {
-  showDarkTerminal.value = !showDarkTerminal.value;
-};
-
 const crackPassword = (passwordList) => {
   const targetPassword = passwordKey.value; 
 
-  
   for (const passwordItem of passwordList) {
     const currentPassword = passwordItem.password;
 
-   
     if (currentPassword === targetPassword) {
       messages.value.push(`Password cracked: ${currentPassword}`);
       return true; 
@@ -122,7 +119,7 @@ const navigateCommandHistory = (direction) => {
   }
 };
 
-const executeCommand = () => {
+const executeCommandForm = () => {
   if (!command.value.trim()) return;
 
   addToCommandHistory(command.value);
@@ -130,6 +127,10 @@ const executeCommand = () => {
   loading.value = true;
   messages.value.push("Executing command...");
   executeCommandLogic();
+};
+
+const executeCommandInput = () => {
+  executeCommandForm();
 };
 
 window.addEventListener('keydown', (event) => {
@@ -151,14 +152,12 @@ const calculateTimeToCrack = () => {
 
   let timeToCrack = 0;
 
-  
   if (complexityFactors.length < 8) {
     timeToCrack += 2; 
   } else {
     timeToCrack += 5; 
   }
 
- 
   timeToCrack += complexityFactors.uppercase ? 3 : 0;
   timeToCrack += complexityFactors.lowercase ? 3 : 0;
   timeToCrack += complexityFactors.digits ? 4 : 0;
@@ -171,31 +170,40 @@ const timeToCrack = calculateTimeToCrack();
 </script>
 
 <style scoped>
-.dark-terminal {
-  background-color: #000;
+
+.custom-terminal {
+  background-color: #0f0f0f;
   padding: 20px;
-  border-radius: 10px;
-  width: 400px;
+  border-radius: 5px;
+  width: 600px;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-  color: #fff;
+  color: #00ff00;
+  font-family: 'Consolas', monospace;
 }
 
 #output {
   height: 200px;
   overflow-y: auto;
-  border: 1px solid #333;
+  border: 1px solid #00ff00;
   padding: 10px;
   margin-bottom: 10px;
 }
 
 .terminal-message {
   margin-bottom: 5px;
-  color: orange;
+  color: #00ff00;
 }
 
 input {
-  width: 100%;
+  width: calc(100% - 20px);
   padding: 10px;
   box-sizing: border-box;
+  background-color: #0f0f0f;
+  color: #00ff00;
+  border: none;
+  border-bottom: 1px solid #00ff00;
+  font-family: 'Consolas', monospace;
+  margin: 0;
 }
+
 </style>
