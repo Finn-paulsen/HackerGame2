@@ -1,23 +1,34 @@
 <template>
   <div>
     <div class="custom-terminal" id="output" v-show="showCustomTerminal">
-      <div v-for="(message, index) in messages" :key="index" class="terminal-message">{{ message }}</div>
+      <div
+        v-for="(message, index) in messages"
+        :key="index"
+        class="terminal-message"
+      >
+        {{ message }}
+      </div>
       <form @submit.prevent="executeCommandForm">
-        <input v-model="command" ref="commandInput" placeholder="Please enter a command..." @keydown.enter="executeCommandInput"/>
+        <input
+          v-model="command"
+          ref="commandInput"
+          placeholder="Please enter a command..."
+          @keydown.enter="executeCommandInput"
+        />
       </form>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
 
 import passwordList from "../assets/PASSWORD_LIST.json";
 const messages = ref([]);
 const loading = ref(false);
 const confirmationPending = ref(false);
-const passwordKey = ref('dasIstEinTestPassword'); 
-const command = ref('');
+const passwordKey = ref("dasIstEinTestPassword");
+const command = ref("");
 const showCustomTerminal = ref(true);
 
 const toggleCustomTerminal = () => {
@@ -28,18 +39,18 @@ const commandHistory = ref([]);
 let commandHistoryIndex = ref(-1);
 
 const crackPassword = (passwordList) => {
-  const targetPassword = passwordKey.value; 
+  const targetPassword = passwordKey.value;
 
   for (const passwordItem of passwordList) {
     const currentPassword = passwordItem.password;
 
     if (currentPassword === targetPassword) {
       messages.value.push(`Password cracked: ${currentPassword}`);
-      return true; 
+      return true;
     }
   }
 
-  return false; 
+  return false;
 };
 
 const startPasswordCracker = () => {
@@ -61,12 +72,14 @@ const attemptCrack = (passwords, currentIndex) => {
     }, 2000);
   } else {
     loading.value = false;
-    messages.value.push('Password crack failed.');
+    messages.value.push("Password crack failed.");
   }
 };
 
 const askConfirmation = () => {
-  messages.value.push("Are you sure you want to start the password cracker? (y/n)");
+  messages.value.push(
+    "Are you sure you want to start the password cracker? (y/n)"
+  );
   confirmationPending.value = true;
 };
 
@@ -97,8 +110,6 @@ const executeCommandLogic = () => {
       messages.value.push("Command History cleared.");
     } else if (command.value.toLowerCase() === "crackpassword") {
       askConfirmation();
-    } else {
-      messages.value.push(`Error: Command not recognized - ${command.value}`);
     }
   }
 
@@ -125,7 +136,6 @@ const executeCommandForm = () => {
   addToCommandHistory(command.value);
 
   loading.value = true;
-  messages.value.push("Executing command...");
   executeCommandLogic();
 };
 
@@ -133,10 +143,10 @@ const executeCommandInput = () => {
   executeCommandForm();
 };
 
-window.addEventListener('keydown', (event) => {
-  if (event.key === 'ArrowUp') {
+window.addEventListener("keydown", (event) => {
+  if (event.key === "ArrowUp") {
     navigateCommandHistory(1);
-  } else if (event.key === 'ArrowDown') {
+  } else if (event.key === "ArrowDown") {
     navigateCommandHistory(-1);
   }
 });
@@ -153,9 +163,9 @@ const calculateTimeToCrack = () => {
   let timeToCrack = 0;
 
   if (complexityFactors.length < 8) {
-    timeToCrack += 2; 
+    timeToCrack += 2;
   } else {
-    timeToCrack += 5; 
+    timeToCrack += 5;
   }
 
   timeToCrack += complexityFactors.uppercase ? 3 : 0;
@@ -170,7 +180,6 @@ const timeToCrack = calculateTimeToCrack();
 </script>
 
 <style scoped>
-
 .custom-terminal {
   background-color: #0f0f0f;
   padding: 20px;
@@ -178,7 +187,7 @@ const timeToCrack = calculateTimeToCrack();
   width: 600px;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
   color: #00ff00;
-  font-family: 'Consolas', monospace;
+  font-family: "Anonymous Pro", monospace;
 }
 
 #output {
@@ -202,8 +211,7 @@ input {
   color: #00ff00;
   border: none;
   border-bottom: 1px solid #00ff00;
-  font-family: 'Consolas', monospace;
+  font-family: "Anonymous Pro", monospace;
   margin: 0;
 }
-
 </style>

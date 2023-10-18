@@ -27,7 +27,7 @@
       <p>Remote Connection</p>
     </div>
 
-    <Searchdata :datensaetze="datensaetze" :toggleDatenbankFenster="toggleDatenbankFenster" />
+    <Searchdata :datensaetze="datensaetze" :toggleDatenbankFenster="toggleDatenbankFenster" :isSerchdataopen="isSerchdataopen" />
     <DarkTerminal v-if="userData.isDarkTerminalModalActive" />
   </div>
 </template>
@@ -46,15 +46,17 @@ const showFiles = ref(false);
 const userData = userStore();
 const ergebnisse = ref([]);
 const showCmdWindow = ref(false); 
+const isSearchdataopen= ref (false);
 
 const zeigeFiles = () => {
   showFiles.value = !showFiles.value;
 };
 
 const toggleDatenbankFenster = () => {
-  const datenbankFenster = document.getElementById("datenbankFenster");
-  datenbankFenster.style.display = "block";
-  ergebnisse.value = [];
+  // const datenbankFenster = document.getElementById("datenbankFenster");
+  // datenbankFenster.style.display = "block";
+  // ergebnisse.value = [];
+  isSearchdataopen.value= !isSearchdataopen.value;
 };
 
 const sucheNachName = () => {
@@ -65,7 +67,7 @@ const sucheNachName = () => {
     );
   } else {
     
-    console.error("Bitte geben Sie einen Namen ein.");
+    console.error("Please enter a name.");
     
   }
 };
@@ -80,14 +82,9 @@ const openTerminal = () => {
 <style>
 body {
   margin: 0;
-  background-color: #ffffff;
-  color: black;
-  font-family: "Courier New", monospace;
+  padding: 0;
+  font-family: 'Anonymous Pro', monospace;
 
-  background-size: cover;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
 .icon-container {
@@ -172,10 +169,6 @@ button:hover {
   right: 10px;
   display: flex;
   z-index: 2;
-}
-
-.versteckt {
-  display: none;
 }
 
 #app {
