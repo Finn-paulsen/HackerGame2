@@ -2,6 +2,7 @@
   <TheLogin v-if="!userData.user" />
 
   <div v-else class="tool-icons" id="tool-icons">
+
     <div id="datenbankIcon" class="icon" data-name="Datenbank" @click="toggleDatenbankFenster">
       <img src="../Bilder/database.png" alt="Datenbank Icon" />
       <p>Database</p>
@@ -27,8 +28,10 @@
       <p>Remote Connection</p>
     </div>
 
-    <Searchdata :datensaetze="datensaetze" :toggleDatenbankFenster="toggleDatenbankFenster" :isSerchdataopen="isSerchdataopen" />
-    <DarkTerminal v-if="userData.isDarkTerminalModalActive" />
+    <button v-show="isDatabaseOpen" class="add-user-button" @click="openAddUserModal">Add User</button>
+    <Searchdata v-show="isDatabaseOpen && isSearchFieldOpen" :datensaetze="datensaetze" :toggleDatenbankFenster="toggleDatenbankFenster" :isSerchdataopen="isSearchFieldOpen" />
+  <AddUserModal :isVisible="isAddUserModalOpen" />
+  <DarkTerminal v-if="userData.isDarkTerminalModalActive" />
   </div>
 </template>
 
@@ -40,23 +43,37 @@ import TheLogin from "../components/TheLogin.vue";
 import Searchdata from "../components/Searchdata.vue";
 import datensaetzeData from '../assets/MOCK_DATA.json';
 import DarkTerminal from '../components/DarkTerminal.vue';
+import AddUserModal from '../components/AddUserModal.vue';
 
 const datensaetze = ref(datensaetzeData);
 const showFiles = ref(false);
 const userData = userStore();
 const ergebnisse = ref([]);
-const showCmdWindow = ref(false); 
-const isSearchdataopen= ref (false);
+
+const isAddUserModalOpen = ref(false);
+
+const openAddUserModal = () => {
+  isAddUserModalOpen.value = true;
+};
+
+
 
 const zeigeFiles = () => {
   showFiles.value = !showFiles.value;
 };
 
+const isDatabaseOpen = ref(false);
+const isSearchFieldOpen = ref(false);
+
 const toggleDatenbankFenster = () => {
-  // const datenbankFenster = document.getElementById("datenbankFenster");
-  // datenbankFenster.style.display = "block";
-  // ergebnisse.value = [];
-  isSearchdataopen.value= !isSearchdataopen.value;
+  isDatabaseOpen.value = !isDatabaseOpen.value;
+
+ 
+  if (!isDatabaseOpen.value) {
+    filterInput.value = "";
+    ergebnisse.value = [];
+    isSearchFieldOpen.value = false; 
+  }
 };
 
 const sucheNachName = () => {
@@ -72,11 +89,17 @@ const sucheNachName = () => {
   }
 };
 
+const addUser = () => {
+  datensaetze.value.push({
+    id: datensaetze.value.length + 1,
+    ...formData.value,
+  });
 
-const openTerminal = () => {
-  const terminalModal = this.$refs.terminalModal;
-  terminalModal.open();
+  closeModal(); 
 };
+
+
+
 </script>
 
 <style>
@@ -221,66 +244,36 @@ button:hover {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #111;
+  background-color: #282c34; 
   padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  border-radius: 10px; 
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
   z-index: 3;
-  display: none;
-  background: linear-gradient(to right, #111 0%, #000 100%);
-  animation: backgroundAnimation 5s linear infinite;
-  height: auto;
-  padding-bottom: 20px;
-}
-
-@keyframes backgroundAnimation {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  100% {
-    background-position: 100% 50%;
-  }
 }
 
 #datenbankFenster button {
-  margin-top: 10px;
-  background-color: #4caf50;
+  margin-top: 20px; 
+  background-color: #61dafb; 
   color: #fff;
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   cursor: pointer;
-  padding: 8px 15px;
-  font-size: 14px;
-  animation: glowAnimation 1s infinite alternate;
+  padding: 10px 20px;
+  font-size: 16px; 
 }
 
-@keyframes glowAnimation {
-  0% {
-    box-shadow: 0 0 5px rgba(0, 255, 0, 0.8);
-  }
-
-  100% {
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
-  }
+#datenbankFenster button:hover {
+  background-color: #4fa3d1; 
 }
 
 #datenbankFenster input {
-  animation: pulseAnimation 1.5s infinite;
-}
-
-@keyframes pulseAnimation {
-  0% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.05);
-  }
-
-  100% {
-    transform: scale(1);
-  }
+  margin-top: 10px; 
+  padding: 12px;
+  width: 100%; 
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  box-sizing: border-box;
 }
 
 #datenbankIcon {
@@ -310,5 +303,20 @@ button:hover {
 hr {
   margin-top: 20px;
   margin-bottom: 5px;
+}
+
+.add-user-button {
+  background-color: transparent;
+  border: 2px solid #ddd;
+  padding: 8px 15px;
+  color: #ddd;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.add-user-button:hover {
+  background-color: #ddd;
+  color: #000;
+  cursor: pointer;
 }
 </style>

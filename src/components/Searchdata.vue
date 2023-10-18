@@ -8,6 +8,17 @@
     />
     <button @click="sucheNachName()">Suchen</button>
   </div>
+  <div v-if="isCreatePersonFormOpen" class="create-person-form">
+      <label for="newFirstName">First Name:</label>
+      <input type="text" id="newFirstName" v-model="newPerson.first_name" />
+
+      <label for="newLastName">Last Name:</label>
+      <input type="text" id="newLastName" v-model="newPerson.last_name" />
+
+      <!-- Weitere Felder hinzufügen je nach Bedarf -->
+
+      <button @click="erstelleNeuePerson">Person erstellen</button>
+    </div>
   <div v-if="isContainerOpen" class="ergebnis-container">
     <table class="custom-table">
       <tbody>
@@ -16340,7 +16351,7 @@ const datensaetze = [
     postal_code: "85839",
   },
   {
-    id: 1034,
+    id: 1032,
     first_name: "David",
     last_name: "Wagner",
     email: "David@yahoo.com",
@@ -16356,7 +16367,7 @@ const datensaetze = [
     postal_code: "80336",
   },
   {
-    id: 1035,
+    id: 1033,
     first_name: "Julia",
     last_name: "Lehmann",
     email: "Julia@gmail.com",
@@ -16372,6 +16383,27 @@ const datensaetze = [
     postal_code: "60313",
   },
 ];
+
+const isCreatePersonFormOpen = ref(false);
+const newPerson = ref({
+  first_name: "",
+  last_name: "",
+  // Fügen Sie hier weitere Felder hinzu
+});
+
+const toggleCreatePersonForm = () => {
+  isCreatePersonFormOpen.value = !isCreatePersonFormOpen.value;
+};
+
+const erstelleNeuePerson = () => {
+  datensaetze.push(newPerson.value);
+  isCreatePersonFormOpen.value = false;
+
+  newPerson.value = {
+    first_name: "",
+    last_name: "",
+  };
+};
 
 function sucheNachName() {
   let result = datensaetze.find((x) => x.first_name === filterInput.value);
@@ -16451,4 +16483,5 @@ hr {
   margin: 10px 0;
   font-family: 'Anonymous Pro', monospace;
 }
+
 </style>
